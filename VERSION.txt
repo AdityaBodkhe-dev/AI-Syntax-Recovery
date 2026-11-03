@@ -1,0 +1,3 @@
+AI Syntax Recovery Studio
+Version: V13 FINAL
+Focus: iterative multi-error repair with whole-program validation

@@ -1,0 +1,218 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Syntax Recovery Studio</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header class="topbar">
+        <div class="brand-mark">SR</div>
+        <div>
+            <h1>Syntax Recovery Studio</h1>
+            <p>Compiler diagnostics and syntax error recovery</p>
+        </div>
+        <span class="status"><span class="status-dot"></span> Local workspace</span>
+    </header>
+
+    <main class="layout">
+        <section class="panel editor-panel">
+            <div class="panel-heading">
+                <div>
+                    <p class="eyebrow">SOURCE CODE</p>
+                    <h2>Code editor</h2>
+                </div>
+                <div class="toolbar-actions">
+                    <button id="loadExample" class="button secondary">Load example</button>
+                    <button id="clearCode" class="button secondary">Clear</button>
+                </div>
+            </div>
+
+            <label for="sourceCode" class="field-label">Enter your C-like program</label>
+            <textarea id="sourceCode" spellcheck="false" autocapitalize="off">int a
+a = 10 + 5;
+if (a > 10) {
+    print(a);
+}</textarea>
+
+            <div class="editor-footer">
+                <span id="lineCount">5 lines</span>
+                <span>Language: Mini C</span>
+            </div>
+
+            <div class="controls">
+                <div class="strategy-control">
+                    <label for="strategy" class="field-label">Recovery strategy</label>
+                    <select id="strategy">
+                        <option value="automatic">Automatic recovery</option>
+                        <option value="token insertion">Token insertion</option>
+                        <option value="phrase-level recovery">Phrase-level recovery</option>
+                        <option value="panic mode">Panic-mode synchronization</option>
+                    </select>
+                </div>
+                <button id="analyzeButton" class="button primary">
+                    <span id="buttonText">Analyze program</span>
+                    <span id="buttonSpinner" class="spinner hidden"></span>
+                </button>
+            </div>
+            <p id="requestMessage" class="request-message" role="status"></p>
+        </section>
+
+        <section class="results-section">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">ANALYSIS OVERVIEW</p>
+                    <h2>Results dashboard</h2>
+                </div>
+                <span id="resultBadge" class="badge neutral">Not analyzed</span>
+            </div>
+
+            <section class="panel result-panel">
+                <div class="panel-heading">
+                    <div>
+                        <p class="eyebrow">RECOVERED PROGRAM</p>
+                        <h3>Proposed corrected source</h3>
+                    </div>
+                    <button id="copyRecovered" class="button secondary">Copy code</button>
+                </div>
+                <p class="recovered-note">
+                    Proposed correction only. Your original input is not modified.
+                </p>
+                <textarea id="recoveredSource" class="recovered-code"
+                    readonly spellcheck="false"
+                    aria-label="Proposed corrected source code"
+                    placeholder="Run an analysis to see recovered source."></textarea>
+                <p id="recoveredMessage" class="request-message" role="status"></p>
+            </section>
+
+            <section class="panel result-panel">
+                <div class="panel-heading">
+                    <div>
+                        <p class="eyebrow">CHANGE REVIEW</p>
+                        <h3>Original vs proposed changes</h3>
+                    </div>
+                </div>
+                <p class="recovered-note">Line-level diff for the parser's proposed output. Green lines are additions; red lines are removals.</p>
+                <div id="diffResults" class="diff-view empty-state">Run an analysis to compare changes.</div>
+            </section>
+
+            <section class="panel result-panel">
+                <div class="panel-heading">
+                    <div>
+                        <p class="eyebrow">STRUCTURE</p>
+                        <h3>Parse outline</h3>
+                    </div>
+                </div>
+                <p class="recovered-note">Approximate Mini-C structural outline, not a full compiler-generated abstract syntax tree.</p>
+                <div id="parseOutline" class="outline-view empty-state">Run an analysis to inspect the program structure.</div>
+            </section>
+
+            <section class="panel result-panel">
+                <div class="panel-heading">
+                    <div>
+                        <p class="eyebrow">EVALUATION</p>
+                        <h3>Built-in smoke benchmark</h3>
+                    </div>
+                    <button id="runBenchmark" class="button secondary">Run benchmark</button>
+                </div>
+                <p class="recovered-note">Runs a small fixed set of Mini-C sanity cases. This is a regression check, not a real-world repair accuracy claim.</p>
+                <div id="benchmarkResults" class="empty-state">Benchmark has not been run.</div>
+            </section>
+
+            <section class="panel result-panel">
+                <div class="panel-heading">
+                    <div>
+                        <p class="eyebrow">ALTERNATIVES</p>
+                        <h3>Correction options</h3>
+                    </div>
+                </div>
+                <p class="recovered-note">Compare up to three syntax-checked proposals. A valid parse does not guarantee the intended meaning.</p>
+                <div id="correctionOptions" class="correction-options">
+                    <div class="empty-state">Run an analysis to compare correction options.</div>
+                </div>
+            </section>
+
+            <div class="stats-grid">
+                <article class="stat-card">
+                    <span class="stat-label">Tokens</span>
+                    <strong id="tokenCount">—</strong>
+                    <span class="stat-note">Including end marker</span>
+                </article>
+                <article class="stat-card">
+                    <span class="stat-label">Syntax errors</span>
+                    <strong id="errorCount">—</strong>
+                    <span class="stat-note">Parser diagnostics</span>
+                </article>
+                <article class="stat-card">
+                    <span class="stat-label">Lexical errors</span>
+                    <strong id="lexicalCount">—</strong>
+                    <span class="stat-note">Invalid characters</span>
+                </article>
+                <article class="stat-card">
+                    <span class="stat-label">Recovery actions</span>
+                    <strong id="recoveryCount">—</strong>
+                    <span class="stat-note">Recorded parser actions</span>
+                </article>
+            </div>
+
+            <section class="panel result-panel">
+                <div class="panel-heading">
+                    <div>
+                        <p class="eyebrow">DIAGNOSTICS</p>
+                        <h3>Syntax errors</h3>
+                    </div>
+                </div>
+                <div id="errorResults" class="empty-state">
+                    Run an analysis to see diagnostics.
+                </div>
+            </section>
+
+            <section class="panel result-panel">
+                <div class="panel-heading">
+                    <div>
+                        <p class="eyebrow">LEXICAL ANALYSIS</p>
+                        <h3>Token stream</h3>
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Value</th>
+                                <th>Line</th>
+                                <th>Column</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tokenResults">
+                            <tr><td colspan="4" class="empty-cell">No tokens yet.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="panel result-panel">
+                <div class="panel-heading">
+                    <div>
+                        <p class="eyebrow">RECOVERY LOG</p>
+                        <h3>Parser trace</h3>
+                    </div>
+                </div>
+                <div id="traceResults" class="trace-list empty-state">
+                    Recovery actions will appear here.
+                </div>
+            </section>
+
+            <p class="disclaimer">
+                Recovered code is a proposal and is not guaranteed to be valid.
+                Review the result before using it.
+            </p>
+        </section>
+    </main>
+
+    <footer>Syntax Recovery Studio · Educational compiler project</footer>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

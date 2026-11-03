@@ -1,0 +1,140 @@
+{
+  "evaluation": "controlled synthetic syntax mutations",
+  "seed": 20261027,
+  "requested_cases": 1000,
+  "valid_seed_programs": 1000,
+  "cases_evaluated": 1000,
+  "recovered_outputs_that_parse": 777,
+  "parse_validity_rate": 0.777,
+  "outputs_changed": 1000,
+  "unhandled_exceptions": 0,
+  "by_mutation": {
+    "operator_removed": {
+      "cases": 223,
+      "valid_recovery": 0,
+      "changed": 223,
+      "exceptions": 0
+    },
+    "missing_close_paren": {
+      "cases": 321,
+      "valid_recovery": 321,
+      "changed": 321,
+      "exceptions": 0
+    },
+    "missing_semicolon": {
+      "cases": 190,
+      "valid_recovery": 190,
+      "changed": 190,
+      "exceptions": 0
+    },
+    "missing_operand": {
+      "cases": 159,
+      "valid_recovery": 159,
+      "changed": 159,
+      "exceptions": 0
+    },
+    "missing_close_brace": {
+      "cases": 51,
+      "valid_recovery": 51,
+      "changed": 51,
+      "exceptions": 0
+    },
+    "missing_assignment_rhs": {
+      "cases": 56,
+      "valid_recovery": 56,
+      "changed": 56,
+      "exceptions": 0
+    }
+  },
+  "sample_cases": [
+    {
+      "mutation": "operator_removed",
+      "input": "int x; x = (3 4); print(x);",
+      "recovered": "int x; x = (3 );4); print(x);",
+      "valid": false,
+      "errors_remaining": 3
+    },
+    {
+      "mutation": "missing_close_paren",
+      "input": "int a; a = 5 + 6; print(a;",
+      "recovered": "int a; a = 5 + 6; print(a);",
+      "valid": true,
+      "errors_remaining": 1
+    },
+    {
+      "mutation": "missing_close_paren",
+      "input": "int a; a = 5 + 6; print(a;",
+      "recovered": "int a; a = 5 + 6; print(a);",
+      "valid": true,
+      "errors_remaining": 1
+    },
+    {
+      "mutation": "missing_close_paren",
+      "input": "int n; n = 9; if (n > 2) { print(n; }",
+      "recovered": "int n; n = 9; if (n > 2) { print(n); }",
+      "valid": true,
+      "errors_remaining": 1
+    },
+    {
+      "mutation": "missing_close_paren",
+      "input": "int n; n = 9; if (n > 2) { print(n; }",
+      "recovered": "int n; n = 9; if (n > 2) { print(n); }",
+      "valid": true,
+      "errors_remaining": 1
+    },
+    {
+      "mutation": "operator_removed",
+      "input": "int count; count = 0; while (count < 3) { count = count 1; } print(count);",
+      "recovered": "int count; count = 0; while (count < 3) { count = count ;1; } print(count);",
+      "valid": false,
+      "errors_remaining": 2
+    },
+    {
+      "mutation": "operator_removed",
+      "input": "int x, y; x = 2; y = x 3; print(y);",
+      "recovered": "int x, y; x = 2; y = x ;3; print(y);",
+      "valid": false,
+      "errors_remaining": 2
+    },
+    {
+      "mutation": "missing_semicolon",
+      "input": "int x, y; x = 2; y = x * 3 print(y);",
+      "recovered": "int x, y; x = 2; y = x * 3 ;print(y);",
+      "valid": true,
+      "errors_remaining": 1
+    },
+    {
+      "mutation": "missing_semicolon",
+      "input": "int a, b; a = b + 2 print(a);",
+      "recovered": "int a, b; a = b + 2 ;print(a);",
+      "valid": true,
+      "errors_remaining": 1
+    },
+    {
+      "mutation": "operator_removed",
+      "input": "int count; count = 0; while (count < 3) { count = count 1; } print(count);",
+      "recovered": "int count; count = 0; while (count < 3) { count = count ;1; } print(count);",
+      "valid": false,
+      "errors_remaining": 2
+    },
+    {
+      "mutation": "missing_operand",
+      "input": "int a; a = 5 + ; print(a);",
+      "recovered": "int a; a = 5 + 0; print(a);",
+      "valid": true,
+      "errors_remaining": 1
+    },
+    {
+      "mutation": "missing_close_paren",
+      "input": "int a; a = 1; print(a;",
+      "recovered": "int a; a = 1; print(a);",
+      "valid": true,
+      "errors_remaining": 1
+    }
+  ],
+  "limitations": [
+    "Synthetic controlled mutations only; not a real-world benchmark.",
+    "Parse validity does not prove the repair matches the programmer's intent.",
+    "Some generated mutations may remove more than one syntactic feature."
+  ]
+}
